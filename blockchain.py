@@ -1,21 +1,31 @@
 import hashlib
-import json
+
+from urllib.parse import urlparse
 
 from time import time
 
 import requests
 
+from entities.block import Block
+from entities.transaction import Transaction
+
 
 class Blockchain(object):
 
+    # current_transactions: [dict]
+    # chain: [dict]
+
     def __init__(self):
-        self.current_transactions = []
-        self.chain = []
+        self.current_transactions: [dict] = []
+        self.chain: [dict] = []
 
         # Create the genesis block
-        self.new_block(previous_hash=1, proof=100)
+        genesis_block = Block()
+        genesis_block.from_value(1, time(), current_transactions=[], proof=100, previous_hash=1)
+        self.chain.append(genesis_block.__dict__)
+        # self.new_block(previous_hash=1, proof=100)
 
-    def new_block(self, proof, previous_hash=None):
+    def new_block(self, proof, previous_hash=None) -> Block:
         """
         Create a new Block in the Blockchain
         :param proof: <int> The proof given by the Proof of Work algorithm
@@ -23,21 +33,24 @@ class Blockchain(object):
         :return: <dict> New Block
         """
 
-        block = {
-            'index': len(self.chain) + 1,
-            'timestamp': time(),
-            'transactions': self.current_transactions,
-            'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1]),
-        }
+        block = Block()
+        block.from_value(len(self.chain) + 1, time(), self.current_transactions, proof,
+                         previous_hash or self.chain[-1].hash)
+        # block = {
+        #     'index': len(self.chain) + 1,
+        #     'timestamp': time(),
+        #     'transactions': self.current_transactions,
+        #     'proof': proof,
+        #     'previous_hash': previous_hash or self.hash(self.chain[-1]),
+        # }
 
         # Reset the current list of transactions
         self.current_transactions = []
 
-        self.chain.append(block)
+        self.chain.append(block.__dict__)
         return block
 
-    def new_transaction(self, sender, recipient, amount):
+    def new_transaction(self, sender, recipient, amount) -> int:
         """
         Creates a new transaction to go into the next mined Block
         :param sender: <str> Address of the Sender
@@ -45,31 +58,37 @@ class Blockchain(object):
         :param amount: <int> Amount
         :return: <int> The index of the Block that will hold this transaction
         """
-        self.current_transactions.append({
-            'sender': sender,
-            'recipient': recipient,
-            'amount': amount,
-        })
 
-        return self.last_block['index'] + 1
+        transaction = Transaction(sender, recipient, amount)
+        self.current_transactions.append(transaction.__dict__)
+        # self.current_transactions.append({
+        #     'sender': sender,
+        #     'recipient': recipient,
+        #     'amount': amount,
+        # })
+
+        return self.last_block.index + 1
 
     @property
-    def last_block(self):
-        return self.chain[-1]
+    def last_block(self) -> Block:
+        last_block_dict = self.chain[-1]
+        last_block = Block()
+        last_block.from_dict(last_block_dict)
+        return last_block
 
-    @staticmethod
-    def hash(block):
-        """
-        Creates a SHA-256 hash of a Block
-        :param block: <dict> Block
-        :return: <str>
-        """
+    # @staticmethod
+    # def hash(block):
+    #     """
+    #     Creates a SHA-256 hash of a Block
+    #     :param block: <dict> Block
+    #     :return: <str>
+    #     """
+    #
+    #     # We must make sure that the Dictionary is Ordered, or we'll have inconsistent hashes
+    #     block_string = json.dumps(block, sort_keys=True).encode()
+    #     return hashlib.sha256(block_string).hexdigest()
 
-        # We must make sure that the Dictionary is Ordered, or we'll have inconsistent hashes
-        block_string = json.dumps(block, sort_keys=True).encode()
-        return hashlib.sha256(block_string).hexdigest()
-
-    def proof_of_work(self, last_proof):
+    def proof_of_work(self, last_proof: int) -> int:
         """
         Simple Proof of Work Algorithm:
          - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
@@ -85,7 +104,7 @@ class Blockchain(object):
         return proof
 
     @staticmethod
-    def valid_proof(last_proof, proof):
+    def valid_proof(last_proof: int, proof: int) -> bool:
         """
         Validates the Proof: Does hash(last_proof, proof) contain 4 leading zeroes?
         :param last_proof: <int> Previous Proof
@@ -97,7 +116,17 @@ class Blockchain(object):
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
 
-    def valid_chain(self, chain):
+    def register_node(self, address: str):
+        """
+        Add a new node to the list of nodes
+        :param address: <str> Address of node. Eg. 'http://192.168.0.5:5000'
+        :return: None
+        """
+
+        parsed_url = urlparse(address)
+        self.nodes.add(parsed_url.netloc)
+
+    def valid_chain(self, chain: []) -> bool:
         """
         Determine if a given blockchain is valid
         :param chain: <list> A blockchain
@@ -113,11 +142,11 @@ class Blockchain(object):
             print(f'{block}')
             print("\n-----------\n")
             # Check that the hash of the block is correct
-            if block['previous_hash'] != self.hash(last_block):
+            if block.previous_hash != last_block.hash:
                 return False
 
             # Check that the Proof of Work is correct
-            if not self.valid_proof(last_block['proof'], block['proof']):
+            if not self.valid_proof(last_block.proof, block.proof):
                 return False
 
             last_block = block
@@ -125,7 +154,7 @@ class Blockchain(object):
 
         return True
 
-    def resolve_conflicts(self):
+    def resolve_conflicts(self) -> bool:
         """
         This is our Consensus Algorithm, it resolves conflicts
         by replacing our chain with the longest one in the network.
