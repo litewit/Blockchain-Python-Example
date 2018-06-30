@@ -18,6 +18,7 @@ class Blockchain(object):
     def __init__(self):
         self.current_transactions: [dict] = []
         self.chain: [dict] = []
+        self.nodes = set()
 
         # Create the genesis block
         genesis_block = Block()
@@ -36,13 +37,6 @@ class Blockchain(object):
         block = Block()
         block.from_value(len(self.chain) + 1, time(), self.current_transactions, proof,
                          previous_hash or self.chain[-1].hash)
-        # block = {
-        #     'index': len(self.chain) + 1,
-        #     'timestamp': time(),
-        #     'transactions': self.current_transactions,
-        #     'proof': proof,
-        #     'previous_hash': previous_hash or self.hash(self.chain[-1]),
-        # }
 
         # Reset the current list of transactions
         self.current_transactions = []
@@ -61,19 +55,14 @@ class Blockchain(object):
 
         transaction = Transaction(sender, recipient, amount)
         self.current_transactions.append(transaction.__dict__)
-        # self.current_transactions.append({
-        #     'sender': sender,
-        #     'recipient': recipient,
-        #     'amount': amount,
-        # })
 
         return self.last_block.index + 1
 
     @property
     def last_block(self) -> Block:
-        last_block_dict = self.chain[-1]
+        # last_block_dict = self.chain[-1]
         last_block = Block()
-        last_block.from_dict(last_block_dict)
+        last_block.from_dict(self.chain[-1])
         return last_block
 
     # @staticmethod
@@ -133,13 +122,17 @@ class Blockchain(object):
         :return: <bool> True if valid, False if not
         """
 
-        last_block = chain[0]
+        last_block = Block()
+        last_block.from_dict(chain[0])
         current_index = 1
 
         while current_index < len(chain):
-            block = chain[current_index]
-            print(f'{last_block}')
-            print(f'{block}')
+            # block_dict = chain[current_index]
+            block = Block()
+            block.from_dict(chain[current_index])
+
+            print(f'{last_block.__dict__}')
+            print(f'{block.__dict__}')
             print("\n-----------\n")
             # Check that the hash of the block is correct
             if block.previous_hash != last_block.hash:
