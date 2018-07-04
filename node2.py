@@ -16,6 +16,15 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
+@app.route('/', methods=['GET'])
+def node():
+    response = {
+        'node': node_identifier,
+        'amount': blockchain.total_amount(node_identifier),
+    }
+    return jsonify(response), 200
+
+
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
@@ -55,10 +64,14 @@ def new_transaction():
         return 'Missing values', 400
 
     # Create a new Transaction
-    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+    if blockchain.valid_transaction(values['sender'], values['recipient'], values['amount']):
+        index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
 
-    response = {'message': f'Transaction will be added to Block {index}'}
-    return jsonify(response), 201
+        response = {'message': f'Transaction will be added to Block {index}'}
+        return jsonify(response), 201
+    else:
+        response = {'message': f'Transaction is not valid'}
+        return jsonify(response), 201
 
 
 @app.route('/chain', methods=['GET'])

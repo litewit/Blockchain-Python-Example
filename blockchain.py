@@ -34,6 +34,8 @@ class Blockchain(object):
         :return: <dict> New Block
         """
 
+        self.resolve_conflicts()
+
         block = Block()
         block.from_value(len(self.chain) + 1, time(), self.current_transactions, proof,
                          previous_hash or self.chain[-1].hash)
@@ -43,6 +45,34 @@ class Blockchain(object):
 
         self.chain.append(block.__dict__)
         return block
+
+    def total_amount(self, node_id) -> int:
+
+        self.resolve_conflicts()
+
+        current_index = 1
+        total_amount = 0
+
+        while current_index < len(self.chain):
+            block = Block()
+            block.from_dict(self.chain[current_index])
+
+            for transaction in block.transactions:
+                if transaction['recipient'] == node_id:
+                    total_amount += transaction['amount'];
+                elif transaction['sender'] == node_id:
+                    total_amount -= transaction['amount']
+
+            current_index += 1
+
+        return total_amount
+
+    def valid_transaction(self, sender, recipient, amount) -> bool:
+        total_amount = self.total_amount(sender);
+        if amount > total_amount:
+            return False
+        else:
+            return True
 
     def new_transaction(self, sender, recipient, amount) -> int:
         """
