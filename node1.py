@@ -19,7 +19,7 @@ blockchain = Blockchain()
 @app.route('/', methods=['GET'])
 def node():
     response = {
-        'node': node_identifier,
+        'node address': node_identifier,
         'amount': blockchain.total_amount(node_identifier),
     }
     return jsonify(response), 200
@@ -64,7 +64,8 @@ def new_transaction():
         return 'Missing values', 400
 
     # Create a new Transaction
-    if blockchain.valid_transaction(values['sender'], values['recipient'], values['amount']):
+    if blockchain.valid_transaction(values['sender'], values['recipient'], values['amount']) \
+            and values['sender'] == node_identifier:
         index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
 
         response = {'message': f'Transaction will be added to Block {index}'}

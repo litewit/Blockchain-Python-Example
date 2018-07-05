@@ -1,0 +1,125 @@
+{
+	"info": {
+		"_postman_id": "1590c1ab-41b6-4450-a600-bea24f96252b",
+		"name": "Blockchain_Example",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:5002/nodes/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"nodes\": [\"http://localhost:5000\", \"http://localhost:5001\"]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5002/nodes/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"nodes",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5000/nodes/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"nodes\": [\"http://localhost:5001\", \"http://localhost:5002\"]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/nodes/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"nodes",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5001/nodes/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"nodes\": [\"http://localhost:5000\", \"http://localhost:5002\"]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5001/nodes/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"nodes",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5000/transactions/new",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"sender\": \"d89d978b0c144add9b5900c346517e48\",\n \"recipient\": \"91a1104eb76a4d529570a09b26341f4e\",\n \"amount\": 5\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/transactions/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"transactions",
+						"new"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

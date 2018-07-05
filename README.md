@@ -1,7 +1,7 @@
 # Blockchain Python Example
 
 
-###Run all the nodes in separate terminals
+#### Run all the nodes in separate terminals
 
 `python3 node.py`
 
@@ -21,7 +21,7 @@ It will show output as
 
 > Running on http://0.0.0.0:5002/ (Press CTRL+C to quit)
 
-###Use [Postman](https://www.getpostman.com) to open the urls.
+#### Use [Postman](https://www.getpostman.com) to open the urls.
 
 - **[GET]:** **_`/mine`_** to tell our server to mine a new block.
     
@@ -32,8 +32,8 @@ It will show output as
     Post json data sample:
     
     `{
-     "sender": "128963cb75c74fdfa60068e426577985",
-     "recipient": "128963cb75c74fdfa60068e426577986",
+     "sender": "sender_node_address",
+     "recipient": "recipient_node_address",
      "amount": 5
     }`
     
@@ -45,21 +45,22 @@ It will show output as
         "nodes": ["http://localhost:5001",  "http://localhost:5002"]
     }`
 - **[GET]:** **_`/nodes/resolve`_** to implement our Consensus Algorithm, which resolves any conflicts—to ensure a node has the correct chain.
+
+`Blockchain_Example.postman_collection.json` impot it in postman to run post request like **_`/transactions/new`_** or **_`/nodes/register`_**
+  
     
 Now we have three nodes running on localhost port 5000, 5001 and 5002 respectively. Lets call it node0, node1 and node2.
 
-Call the **_`/nodes/register`_** with respective post json data to register {node1, node2} to node0, {node0, node2} to node1, {node0, node1} to node2
+- **Step 1. Register nodes:** Call the **_`/nodes/register`_** with respective post json data to register {node1, node2} to node0, {node0, node2} to node1, {node0, node1} to node2
 
-**_Now select your favorite node and start mining._** Call **_`/mine`_** on that node. Each time you call this api it will mine a block.
+- **Step 2. Mine:** Call **_`/mine`_** on any node. Each time you call this api it will mine a block. Remember its your blockchain so feel free to mine as much as you can. 
 
-Remember its your blockchain so feel free to mine as much as you can. When you are done, call the **_`/nodes/resolve`_** on each node to update the chain by resolving the conflict.  
+- **Step 3. Make a Transaction:** Call **_`/transactions/new`_** on the node you mined to make a transaction. To get the address of each node open **_`/`_** on the node and it will show you the amount mined by that node and the address.
+ **_When you made all your transaction mine again to make that transaction permanent._**
+ 
+Now you can call **_`/`_** on any node to see the amount or node address or **_`/chain`_** to see all the block chain. You can learn more from the references.
 
-Call the **_`/chain`_** api on each node to see the blockchain. You will find all nodes have the same block chain.
-
-
-You can mine from other nodes as well. Make sure to resolve the nodes.
-
-
+Please let us know in the issue or at `team@litewit.com` if there is any mistakes in implementation or logic. The code was inspired by references as well.
     
 For reference...
 
