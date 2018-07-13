@@ -1,5 +1,3 @@
-from entities.transaction import Transaction
-
 import hashlib
 import json
 

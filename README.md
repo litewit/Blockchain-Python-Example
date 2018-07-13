@@ -61,6 +61,9 @@ Now we have three nodes running on localhost port 5000, 5001 and 5002 respective
 Now you can call **_`/`_** on any node to see the amount or node address or **_`/chain`_** to see all the block chain. You can learn more from the references.
 
 Please let us know in the issue or at `team@litewit.com` if there is any mistakes in implementation or logic. The code was inspired by references as well.
+
+
+Initial code were taken from references which then were modified a little. 
     
 For reference...
 
