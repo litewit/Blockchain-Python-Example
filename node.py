@@ -3,8 +3,6 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 
 from blockchain import Blockchain
-from entities.block import Block
-
 
 # Instantiate our Node
 app = Flask(__name__)
@@ -28,7 +26,7 @@ def node():
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
-    last_block: Block = blockchain.last_block
+    last_block = blockchain.last_block
     last_proof = last_block.proof
     proof = blockchain.proof_of_work(last_proof)
 

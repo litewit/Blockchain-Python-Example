@@ -161,9 +161,9 @@ class Blockchain(object):
             block = Block()
             block.from_dict(chain[current_index])
 
-            print(f'{last_block.__dict__}')
-            print(f'{block.__dict__}')
-            print("\n-----------\n")
+            # print(f'{last_block.__dict__}')
+            # print(f'{block.__dict__}')
+            # print("\n-----------\n")
             # Check that the hash of the block is correct
             if block.previous_hash != last_block.hash:
                 return False
